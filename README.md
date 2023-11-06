@@ -32,3 +32,6 @@ const xyValue = '''
 ''';
 webViewController.runJavaScript('jsLineChartFunc($xyValue);');
 ```
+![Screenshot 2023-11-06 at 2 48 07 PM](https://github.com/kattaliraees/flutter_highchart/assets/574396/ac72b3e1-f713-4929-85fb-1c87e33aa09a)
+
+
