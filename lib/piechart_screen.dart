@@ -4,36 +4,29 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
-class PieChartScreen extends StatefulWidget {
-  const PieChartScreen({super.key});
+class PieChartScreen extends StatelessWidget {
+  PieChartScreen({super.key});
 
-  @override
-  State<PieChartScreen> createState() => _PieChartScreenState();
-}
+  late final WebViewController webViewController = WebViewController()
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..enableZoom(false)
+    ..clearCache()
+    ..setBackgroundColor(Colors.transparent)
+    ..loadFlutterAsset('assets/js/hc_index.html')
+    ..setNavigationDelegate(NavigationDelegate(
+      onPageStarted: (url) {
+        if (webViewController.platform is AndroidWebViewController) {
+          AndroidWebViewController.enableDebugging(kDebugMode);
+        }
 
-class _PieChartScreenState extends State<PieChartScreen> {
-  late final WebViewController webViewController;
-  @override
-  void initState() {
-    super.initState();
-    _setupWebViewWidget();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _pieChartWebView();
-  }
-
-  void _setupWebViewWidget() {
-    webViewController = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..enableZoom(false)
-      ..clearCache()
-      ..setBackgroundColor(Colors.transparent)
-      ..loadFlutterAsset('assets/js/hc_index.html')
-      ..setNavigationDelegate(NavigationDelegate(
-        onPageFinished: (url) {
-          const xyValue = ''' 
+        if (webViewController.platform is WebKitWebViewController) {
+          final WebKitWebViewController webKitWebViewController =
+              webViewController.platform as WebKitWebViewController;
+          webKitWebViewController.setInspectable(kDebugMode);
+        }
+      },
+      onPageFinished: (url) {
+        const xyValue = ''' 
       [
         {
             name: 'Browsers',
@@ -68,22 +61,16 @@ class _PieChartScreenState extends State<PieChartScreen> {
         }
     ]
     ''';
-          webViewController.runJavaScript('jsPieChartFunc($xyValue);');
-        },
-      ));
+        webViewController.runJavaScript('jsPieChartFunc($xyValue);');
+      },
+    ));
 
-    if (webViewController.platform is AndroidWebViewController) {
-      AndroidWebViewController.enableDebugging(kDebugMode);
-    }
-
-    if (webViewController.platform is WebKitWebViewController) {
-      final WebKitWebViewController webKitWebViewController =
-          webViewController.platform as WebKitWebViewController;
-      webKitWebViewController.setInspectable(kDebugMode);
-    }
+  @override
+  Widget build(BuildContext context) {
+    return _lineChartWebView();
   }
 
-  Widget _pieChartWebView() {
+  Widget _lineChartWebView() {
     return SizedBox(
         height: 300,
         child: WebViewWidget(

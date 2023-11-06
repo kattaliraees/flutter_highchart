@@ -4,36 +4,29 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
-class LineChartScreen extends StatefulWidget {
-  const LineChartScreen({super.key});
+class LineChartScreen extends StatelessWidget {
+  LineChartScreen({super.key});
 
-  @override
-  State<LineChartScreen> createState() => _LineChartScreenState();
-}
+  late final WebViewController webViewController = WebViewController()
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..enableZoom(false)
+    ..clearCache()
+    ..setBackgroundColor(Colors.transparent)
+    ..loadFlutterAsset('assets/js/hc_index.html')
+    ..setNavigationDelegate(NavigationDelegate(
+      onPageStarted: (url) {
+        if (webViewController.platform is AndroidWebViewController) {
+          AndroidWebViewController.enableDebugging(kDebugMode);
+        }
 
-class _LineChartScreenState extends State<LineChartScreen> {
-  late final WebViewController webViewController;
-  @override
-  void initState() {
-    super.initState();
-    _setupWebViewWidget();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _lineChartWebView();
-  }
-
-  void _setupWebViewWidget() {
-    webViewController = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..enableZoom(false)
-      ..clearCache()
-      ..setBackgroundColor(Colors.transparent)
-      ..loadFlutterAsset('assets/js/hc_index.html')
-      ..setNavigationDelegate(NavigationDelegate(
-        onPageFinished: (url) {
-          const xyValue = ''' 
+        if (webViewController.platform is WebKitWebViewController) {
+          final WebKitWebViewController webKitWebViewController =
+              webViewController.platform as WebKitWebViewController;
+          webKitWebViewController.setInspectable(kDebugMode);
+        }
+      },
+      onPageFinished: (url) {
+        const xyValue = ''' 
                 [{
                   name: 'Installation & Developers',
                   data: [43934, 48656, 65165, 81827, 112143, 142383,
@@ -56,19 +49,13 @@ class _LineChartScreenState extends State<LineChartScreen> {
                           17300, 13053, 11906, 10073]
                   }]
         ''';
-          webViewController.runJavaScript('jsLineChartFunc($xyValue);');
-        },
-      ));
+        webViewController.runJavaScript('jsLineChartFunc($xyValue);');
+      },
+    ));
 
-    if (webViewController.platform is AndroidWebViewController) {
-      AndroidWebViewController.enableDebugging(kDebugMode);
-    }
-
-    if (webViewController.platform is WebKitWebViewController) {
-      final WebKitWebViewController webKitWebViewController =
-          webViewController.platform as WebKitWebViewController;
-      webKitWebViewController.setInspectable(kDebugMode);
-    }
+  @override
+  Widget build(BuildContext context) {
+    return _lineChartWebView();
   }
 
   Widget _lineChartWebView() {
