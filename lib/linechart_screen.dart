@@ -26,6 +26,7 @@ class LineChartScreen extends StatelessWidget {
         }
       },
       onPageFinished: (url) {
+        //serialize your data models to string
         const xyValue = ''' 
                 [{
                   name: 'Installation & Developers',
