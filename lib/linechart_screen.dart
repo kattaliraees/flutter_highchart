@@ -55,10 +55,6 @@ class LineChartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _lineChartWebView();
-  }
-
-  Widget _lineChartWebView() {
     return SizedBox(
         height: 300,
         child: WebViewWidget(
