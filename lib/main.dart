@@ -19,10 +19,9 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: Scaffold(
-          body: SafeArea(
-              child: Center(
-                  child:
-                      Column(children: [PieChartScreen(), LineChartScreen()]))),
+          appBar: AppBar(title: const Text('Highcharts Flutter Demo')),
+          body: Center(
+              child: Column(children: [PieChartScreen(), LineChartScreen()])),
         ));
   }
 }
